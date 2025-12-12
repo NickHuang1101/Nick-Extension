@@ -1,0 +1,72 @@
+{
+  "name": "google-sheet-reader",
+  "displayName": "Google Sheet 讀取器",
+  "description": "讀取 Google Sheet 指定列的議題紀錄與程式代號",
+  "version": "0.0.4",
+  "publisher": "your-name",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sheetReader.connectGoogle",
+        "title": "連接 Google 帳號",
+        "icon": "$(cloud)"
+      },
+      {
+        "command": "sheetReader.quickCreate",
+        "title": "快速開單",
+        "icon": "$(new-file)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sheet-reader-container",
+          "title": "工具箱",
+          "icon": "$(tools)"
+        }
+      ]
+    },
+    "views": {
+      "sheet-reader-container": [
+        {
+          "id": "sheetReader.menuView",
+          "name": "功能選單",
+          "type": "tree"
+        }
+      ]
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "sheetReader.quickCreate",
+          "when": "view == sheetReader.menuView && viewItem == quickCreate"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "googleapis": "^168.0.0"
+  }
+}
