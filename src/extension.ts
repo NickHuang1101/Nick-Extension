@@ -46,7 +46,13 @@ export function activate(context: vscode.ExtensionContext) {
         );
     });
 
-    context.subscriptions.push(connectGoogleCmd, quickCreateCmd);
+    // 註冊登出 Google 帳號的命令
+    const logoutCmd = vscode.commands.registerCommand('sheetReader.logout', async () => {
+        await googleAuthService.logout();
+        googleSheetsService = null;
+    });
+
+    context.subscriptions.push(connectGoogleCmd, quickCreateCmd, logoutCmd);
 }
 
 export function deactivate() {

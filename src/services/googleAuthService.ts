@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { google } from 'googleapis';
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 /**
  * Google OAuth 認證服務

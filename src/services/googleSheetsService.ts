@@ -48,6 +48,20 @@ export class GoogleSheetsService {
     }
 
     /**
+     * 取得所有工作表（頁籤）名稱
+     */
+    async getAllSheetNames(spreadsheetId: string): Promise<string[]> {
+        const info = await this.getSpreadsheetInfo(spreadsheetId);
+        if (!info || !info.sheets) {
+            return [];
+        }
+        
+        return info.sheets
+            .map(sheet => sheet.properties?.title)
+            .filter((name): name is string => !!name);
+    }
+
+    /**
      * 根據 GID 找到對應的工作表名稱
      */
     async getSheetNameByGid(spreadsheetId: string, gid: string): Promise<string | null> {
@@ -185,6 +199,86 @@ export class GoogleSheetsService {
             rowData: rowDataObj,
             headers
         };
+    }
+
+    /**
+     * 更新指定儲存格的值
+     * @param spreadsheetId Spreadsheet ID
+     * @param range 儲存格範圍（如 'Sheet1!A2'）
+     * @param value 要寫入的值
+     */
+    async updateCell(spreadsheetId: string, range: string, value: string): Promise<void> {
+        try {
+            await this.sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range,
+                valueInputOption: 'USER_ENTERED',
+                requestBody: {
+                    values: [[value]]
+                }
+            });
+        } catch (error) {
+            console.error('更新儲存格失敗:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * 更新 JIRA URL 到指定頁籤的「Jira單號」欄位
+     * @param spreadsheetId Spreadsheet ID
+     * @param sheetName 頁籤名稱
+     * @param rowNumber 列號
+     * @param jiraUrl JIRA Issue URL
+     */
+    async updateJiraUrl(spreadsheetId: string, sheetName: string, rowNumber: number, jiraUrl: string): Promise<boolean> {
+        try {
+            // 先讀取標題列找出「Jira單號」欄位的位置
+            const headerRange = `'${sheetName}'!1:1`;
+            const headerData = await this.getSheetData(spreadsheetId, headerRange);
+            
+            if (!headerData || headerData.length === 0) {
+                throw new Error('找不到標題列');
+            }
+
+            const headers = headerData[0] as string[];
+            console.log('標題列:', JSON.stringify(headers));  // 調試用
+            
+            // 尋找「Jira單號」欄位
+            let jiraColIndex = -1;
+            for (let i = 0; i < headers.length; i++) {
+                const h = headers[i];
+                if (h && typeof h === 'string') {
+                    const lower = h.toLowerCase();
+                    console.log(`檢查欄位 ${i}: "${h}" -> "${lower}"`);
+                    if (lower.includes('jira')) {
+                        jiraColIndex = i;
+                        console.log(`找到 Jira 欄位: 索引 ${i}, 名稱 "${h}"`);
+                        break;
+                    }
+                }
+            }
+
+            if (jiraColIndex < 0) {
+                console.warn('找不到任何包含 jira 的欄位');
+                return false;
+            }
+
+            // 將欄位索引轉換為字母（支援超過 Z 的欄位）
+            let colLetter = '';
+            let colIdx = jiraColIndex;
+            while (colIdx >= 0) {
+                colLetter = String.fromCharCode(65 + (colIdx % 26)) + colLetter;
+                colIdx = Math.floor(colIdx / 26) - 1;
+            }
+            const cellRange = `'${sheetName}'!${colLetter}${rowNumber}`;
+            console.log('寫入儲存格:', cellRange, '值:', jiraUrl);
+
+            await this.updateCell(spreadsheetId, cellRange, jiraUrl);
+            return true;
+        } catch (error) {
+            console.error('更新 Jira URL 失敗:', error);
+            return false;
+        }
     }
 
     /**

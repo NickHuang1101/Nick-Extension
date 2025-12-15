@@ -23,6 +23,11 @@
         "command": "sheetReader.quickCreate",
         "title": "快速開單",
         "icon": "$(new-file)"
+      },
+      {
+        "command": "sheetReader.logout",
+        "title": "登出 Google 帳號",
+        "icon": "$(sign-out)"
       }
     ],
     "viewsContainers": {
