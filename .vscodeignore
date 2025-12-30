@@ -1,0 +1,44 @@
+# 排除開發相關檔案
+.vscode/**
+.git/**
+.gitignore
+
+# 排除 TypeScript 原始碼（只需要編譯後的 JS）
+src/**
+**/*.ts
+tsconfig.json
+
+# 排除 node_modules（vsce 會自動處理必要的依賴）
+node_modules/**
+
+# 排除測試檔案
+test/**
+**/*.test.js
+**/*.spec.js
+
+# 排除開發工具設定
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# 排除打包相關
+*.vsix
+build.ps1
+
+# 排除敏感資訊
+credentials.json
+token.json
+
+# 排除套件鎖定檔案
+package-lock.json
+
+# 排除文件（可選，如果你想保留 README 可以移除這行）
+# README.md
+CHANGELOG.md
+
+# 排除其他不必要檔案
+**/*.map
+.DS_Store
+Thumbs.db
+
+esbuild.js
