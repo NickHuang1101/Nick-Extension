@@ -2,7 +2,7 @@
   "name": "google-sheet-reader",
   "displayName": "Google Sheet 讀取器",
   "description": "讀取 Google Sheet 指定列的議題紀錄與程式代號",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publisher": "your-name",
   "engines": {
     "vscode": "^1.85.0"
@@ -58,9 +58,11 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run package",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "package": "node esbuild.js --production",
+    "compile-tsc": "tsc -p ./",
     "lint": "eslint src --ext ts"
   },
   "devDependencies": {
@@ -68,6 +70,7 @@
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
+    "esbuild": "^0.27.2",
     "eslint": "^8.54.0",
     "typescript": "^5.3.2"
   },
